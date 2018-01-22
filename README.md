@@ -2,9 +2,11 @@ Stock scanner app for Android
 
 -- Main purpose of application
 
-TrendScan allows users to enter a list of stocks to watch. Every 30 minutes the price history of each stock is downloaded and a scan filter is run check if the price history matches a desired trend (i.e -10% change over 5 days). Multiple filters are supported.
+TrendScan allows users to enter a list of stocks to watch. Every 30 minutes the price history of each stock is downloaded and a scan filter is run to check if the price history matches a desired trend (i.e -10% change over 5 days). Multiple filters are supported.
 
 -- Notes
+
+This project was created using Android Studio 2.3.1.
 
 The price data feed is provided by Alpha Advantage. The user will need to get an API key from Alpha to usew the app. The key is free and can be acquired here: https://www.alphavantage.co/support/#api-key
 
