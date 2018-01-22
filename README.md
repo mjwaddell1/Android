@@ -8,9 +8,9 @@ TrendScan allows users to enter a list of stocks to watch. Every 30 minutes the 
 
 This project was created using Android Studio 2.3.1.
 
-The price data feed is provided by Alpha Advantage. The user will need to get an API key from Alpha to usew the app. The key is free and can be acquired here: https://www.alphavantage.co/support/#api-key
+The price data feed is provided by Alpha Advantage. The user will need to get an API key from Alpha to use the app. The key is free and can be acquired here: https://www.alphavantage.co/support/#api-key
 
-Alpha provides 20 years of data, but the app only stores the last 6 months to reduce memory.
+Alpha provides 20 years of data, but the app only stores the last 6 months to reduce memory load.
 
 The company name lookup uses my website to check a static stock list for a given symbol. I highly recommend finding another site to get this data from as I will probably change my site.
 
