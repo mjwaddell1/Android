@@ -24,7 +24,7 @@
                       android:id="@+id/linStgMain">
 
             <TextView
-                android:text="--- SETTINGS ---     "
+                android:text="--- SETTINGS ---"
                 android:id="@+id/txtSettingTitle"
                 android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"
@@ -38,8 +38,10 @@
                   android:orientation="horizontal"
                   android:layout_marginBottom="5dp"
                   android:gravity="center_horizontal"
+                  android:layout_gravity="center_horizontal"
                   android:padding="0dp"
                   android:id="@+id/linStg">
+
 
         <Button android:layout_width="wrap_content"
                 android:id="@+id/btnSave"
