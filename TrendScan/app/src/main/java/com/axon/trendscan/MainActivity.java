@@ -187,6 +187,7 @@ public class MainActivity extends Activity //main display screen
 			//assume portrait
 			int screenWidth = Math.min(sz.x, sz.y);
 			int screenHeight = Math.max(sz.x, sz.y);
+			int buttonHeight = screenHeight/30;
 
 			LayoutParams lpChart = new LinearLayout.LayoutParams(screenWidth/2, screenWidth/2 * 2 / 3); //chart button
 			lpChart.setMargins(10, 10, 10, 10);
@@ -224,7 +225,7 @@ public class MainActivity extends Activity //main display screen
 					//button is transparent in front of text
 					//use textview for row background
 					TextView tv = new TextView(this);
-					tv.setHeight(38);
+					tv.setHeight(buttonHeight);
 					tv.setWidth(screenWidth - 10);
 					tv.setBackgroundColor(ti.PassedFilter ? f.ButtonColorAlert : f.ButtonColorNorm);
 					tv.setStateListAnimator(null); //allow send to background
@@ -238,7 +239,7 @@ public class MainActivity extends Activity //main display screen
 					btn.setMinimumHeight(0); //google fuckers
 					btn.setMinWidth(0);
 					btn.setMinimumWidth(0); //google fuckers
-					btn.setHeight(40);
+					btn.setHeight(buttonHeight*105/100);
 					btn.setPadding(20,0,0,0);
 					btn.setWidth(screenWidth - 10);
 					btn.setBackgroundColor(Color.TRANSPARENT); //button on top of text and backcolor
