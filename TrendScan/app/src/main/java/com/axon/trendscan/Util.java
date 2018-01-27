@@ -3,12 +3,15 @@ package com.axon.trendscan;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.Html;
+import android.util.Log;
 import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.TreeMap;
 
 public class Util
 {
@@ -65,7 +68,7 @@ public class Util
 
 		} catch (Exception ex)
 		{
-			ShowToast(ex.getMessage());
+			LE(ex.getMessage());
 		}
 	}
 
@@ -96,5 +99,57 @@ public class Util
 			index += to.length(); // Move to the end of the replacement
 			index = builder.indexOf(from, index);
 		}
+	}
+
+	public static void LI(String msg)
+	{
+		LI(msg, false);
+	}
+
+	public static void LI(String msg, boolean showToast)
+	{
+		Log.i("TrendScan", msg); //info
+		if (showToast)
+			ShowToast(msg);
+	}
+
+	public static void LE(String msg)
+	{
+		Log.e("TrendScan", msg); //error
+		ShowToast(msg);
+	}
+
+	public static StringBuilder GetCatLog(StringBuilder log, boolean reverse)
+	{
+		//load log
+		Process logcat;
+		//final StringBuilder log = new StringBuilder("-- LOG --\n");
+		try
+		{
+			logcat = Runtime.getRuntime().exec(new String[]{"logcat", "-d"});
+			BufferedReader br = new BufferedReader(new InputStreamReader(logcat.getInputStream()), 4 * 1024);
+			String line;
+			String separator = System.getProperty("line.separator");
+			while ((line = br.readLine()) != null)
+			{
+				if (line.contains("TrendScan")) //skip system logs, only show app logs
+				{
+					if (reverse) //last entry first
+					{
+						log.insert(0, separator);
+						log.insert(0, line);
+					}
+					else //start with first log entry
+					{
+						log.append(line);
+						log.append(separator);
+					}
+				}
+			}
+		} catch (Exception e)
+		{
+			LE(e.getMessage());
+		}
+		return log;
 	}
 }

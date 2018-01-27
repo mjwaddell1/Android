@@ -87,7 +87,7 @@ public class Filter
 
 	public void GetStockNames() //get full name for tickers from feed or saved data
 	{
-		Util.ShowToast("GetStockNames");
+		Util.LI("Get Stock Names", true);
 		try {
 			String stks = "";
 			TickerList.clear();
@@ -102,7 +102,7 @@ public class Filter
 					String[] sx = st.split("=");
 					comps.put(sx[0], sx[1]);
 				}
-				Util.ShowToast("Cache had stock names");
+				Util.LI("Cache had stock names", true);
 			}
 			int ctr = 0;
 			for (String tkr : comps.keySet())
@@ -114,7 +114,7 @@ public class Filter
 		}
 		catch (Exception ex)
 		{
-			Util.ShowToast("Error:" + ex.getMessage());
+			Util.LE("Error:" + ex.getMessage());
 		}
 	}
 
@@ -134,6 +134,7 @@ public class Filter
 
 	public int RunFilter() //run filter request
 	{
+		Util.LI("RunFilter " + this.FilterName);
 		try
 		{
 			if (TickerList.size() == 0)
@@ -149,7 +150,7 @@ public class Filter
 		}
 		catch(Exception ex)
 		{
-			Util.ShowToast(ex.getMessage());
+			Util.LE(ex.getMessage());
 		}
 		return -1; //error
 	}

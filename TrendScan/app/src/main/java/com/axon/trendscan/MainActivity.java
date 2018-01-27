@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import android.widget.LinearLayout.*;
@@ -77,6 +78,9 @@ public class MainActivity extends Activity //main display screen
 			@Override
 			public void onClick(View view)
 			{
+				if (ScanSvc.mSvcStarted && ScanSvc.mDataLoading)
+					Util.ShowToast("Data loading. Please wait.");
+				else
 				ShowStockList(false); //update shown list from service, does not run filter if svc running
 			}
 		});
@@ -168,7 +172,7 @@ public class MainActivity extends Activity //main display screen
 		int cnt = ParseStockData(linStock); //show stock list, returns stock cnt shown
 		TextView ns = (TextView) findViewById(R.id.txtNoStocks); //hidden if stocks
 		ns.setVisibility(cnt == 0 ? View.VISIBLE : View.GONE);
-		txtUpdateTime.setText("Last Check: " + sdfDate.format(ScanSvc.dtLastCheck) + " [" + cnt + "]");
+		txtUpdateTime.setText("Last Check: " + sdfDate.format(ScanSvc.dtLastCheck) + " [" + cnt + "-" + ScanSvc.Filters.size()+"]");
 		if (!restoreGUI && ScanSvc.mRefreshOnly) //stop service
 		{
 			ScanSvc.mRefreshOnly = false;
@@ -213,7 +217,7 @@ public class MainActivity extends Activity //main display screen
 					final TickerInfo ti = f.TickerList.get(tkr);
 					if (ti == null) //needed?
 					{
-						Util.ShowToast(tkr + ": No Ticker Data");
+						Util.LI(tkr + ": No Ticker Data", true);
 						continue;
 					}
 					if (!f.ShowAllStocks && !ti.PassedFilter) //only show alert stocks
@@ -247,7 +251,7 @@ public class MainActivity extends Activity //main display screen
 
 					//first row is symbol and span data, next row is chart, etc.
 					String s = f.FilterName + " : " + ti.Symbol + " :";
-					if (f.FilterName == "~") s = ti.Symbol + " :"; //default filter, remove ~
+					if (f.FilterName.equals("~")) s = ti.Symbol + " :"; //default filter, remove ~
 					AddLayoutText(grdFilter, " " + s+"   ", rowctr, 0, Color.BLACK);
 					for (int i=0;i<f.ShowSpans.length;i++)  //day spans
 						AddLayoutText(grdFilter, f.ShowSpans[i]+"="+ ti.SpanChgs[i]+"   ", rowctr, i+1, Color.BLACK);

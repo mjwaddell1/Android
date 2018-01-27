@@ -23,6 +23,7 @@ public class ScanSvc extends Service { //runs in background
 	public static Date dtLastTrigger = new Date();
 	public static Hashtable<String,Filter> Filters = new Hashtable<>();
 	public static Bundle saveState = null;
+	public static boolean mDataLoading = false;
 
 	Timer timer = null;
 
@@ -39,6 +40,7 @@ public class ScanSvc extends Service { //runs in background
 	@Override
 	public void onCreate() //service started
 	{
+		Util.LI("************\nService onCreate"); //shows as separate entries
 		mSvcStarted = true;
 		dtLastCheck = dtLastTrigger = new Date(); //now
 		startForeground(1, DoNotify("no stocks")); //keep service alive if GUI exits
@@ -48,7 +50,7 @@ public class ScanSvc extends Service { //runs in background
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mSvcStarted = true;
-		Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
+		Util.LI("Service onStartCommand");
 		StartTimer(); //rerun stock filters
 		MainActivity.mMainActivity.btnService.setText((ScanSvc.mSvcStarted ? "Stop" : "Start") + " Service");
 		MainActivity.mMainActivity.txtUpdateTime.setText("SERVICE " + (ScanSvc.mSvcStarted ? "STARTED" : "STOPPED"));
@@ -74,6 +76,7 @@ public class ScanSvc extends Service { //runs in background
 	//Called when The service is no longer used and is being destroyed
 	@Override
 	public void onDestroy() {
+		Util.LI("Service onDestroy");
 		mSvcStarted = false;
 		timer.cancel();
 		MainActivity.mMainActivity.btnService.setText((ScanSvc.mSvcStarted ? "Stop" : "Start") + " Service");
@@ -98,7 +101,7 @@ public class ScanSvc extends Service { //runs in background
 
 	private void TimerHit()
 	{
-		DoStockCheck(this);
+		Util.LI("TimerHit FCnt=" + Filters.size()); DoStockCheck(this);
 	}
 
 	public boolean firstRun = true; //service just started
@@ -106,6 +109,8 @@ public class ScanSvc extends Service { //runs in background
 
 	public static void DoStockCheck(ScanSvc svc) //if called from main, svc = null
 	{
+		Util.LI("DoStockCheck");
+		mDataLoading = true;
 		try
 		{
 			/* //data service is free so run 24/7, but limit if paid service
@@ -128,7 +133,7 @@ public class ScanSvc extends Service { //runs in background
 				for (TickerInfo ti: f.TickerList.values()) //each stock in result
 					if (ti.PassedFilter)
 						strNoteNew += ti.Symbol + " "; //add stock symbol to notification
-				Util.ShowToast("tickcnt " + k + " " + f.TickerList.size() +"|"+ cnt);
+				Util.LI("TickCnt " + k + " " + f.TickerList.size() +"|"+ cnt, true);
 			}
 
 			if (svc != null && (svc.firstRun || !strNoteNew.equals(svc.strNote))) //service running && notification changed
@@ -151,8 +156,9 @@ public class ScanSvc extends Service { //runs in background
 		}
 		catch(Exception ex)
 		{
-			Util.ShowToast(ex.getMessage());
+			Util.LE(ex.getMessage());
 		}
+		mDataLoading = false;
 	}
 
 	private Notification DoNotify(String msg) //update notification text and icon

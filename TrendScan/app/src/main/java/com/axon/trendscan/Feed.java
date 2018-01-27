@@ -26,7 +26,7 @@ public class Feed
 			return TickerList;
 		} catch (Exception ex)
 		{
-			Util.ShowToast(ex.getMessage());
+			Util.LE(ex.getMessage());
 		}
 		return null;
 	}
@@ -34,7 +34,7 @@ public class Feed
 	//get price history for each symbol, must register (free) to get regular downloads
 	public static Hashtable<String, float[]> GetPriceHistory(final int dayCnt, final String... tkrs)
 	{
-		Util.ShowToast("GetPriceHistory - " + Util.StringJoin(tkrs,","));
+		Util.LI("GetPriceHistory - " + Util.StringJoin(tkrs,","), true);
 		Hashtable<String, float[]> out = new Hashtable<>();
 		//assume first returned entry is latest\current price
 		final StringBuilder[] tkrData = new StringBuilder[tkrs.length];
@@ -48,29 +48,29 @@ public class Feed
 				@Override
 				public void run()
 				{
-					//get price history for this ticker
-					String url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=" + tkrs[ctr] + "&apikey=" + SettingsActivity.APIKey + "&datatype=csv&outputsize=full";
+					//get price history for this ticker - TIME_SERIES_DAILY_ADJUSTED is 2 days behind (and adj ignored), so just use daily
+					String url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + tkrs[ctr] + "&apikey=" + SettingsActivity.APIKey + "&datatype=csv&outputsize=full";
 					tkrData[ctr] = new StringBuilder();
 					Util.GetWebData(tkrData[ctr], url, 2, dayCnt+1); //6 months of data = 126 days, skip header
 				}
 			});
 			tkrCalls[i].start();
-			try{Thread.sleep(100);}catch(InterruptedException ex){} //don't overload data service
+			try{Thread.sleep(300);}catch(InterruptedException ex){} //don't overload data service
 		}
 		//wait for all threads to finish
 		for (int i = 0; i < tkrCalls.length; i++)
 			try { tkrCalls[i].join(); } catch (InterruptedException ex) {}
 
-		Util.ShowToast("Got Price History");
+		Util.LI("Got Price History", true);
 
 		//parse and merge results
 		for (int i = 0; i < tkrCalls.length; i++)
 		{
-			//timestamp,open,high,low,close,adjusted_close,volume,dividend_amount,split_coefficient
+			//timestamp,open,high,low,close,volume
 			String webstr = tkrData[i].toString();
 			if (!webstr.startsWith("20")) //if not 2018, then error
 			{
-				Util.ShowToast(tkrs[i] + " - " + webstr);
+				Util.LI(tkrs[i] + " - " + webstr, true);
 				continue;
 			}
 			String[] lns = webstr.split("\n");
@@ -78,7 +78,7 @@ public class Feed
 			for (int ln = 0; ln < lns.length; ln++)
 			{
 				String[] cols = lns[ln].split(",");
-				prclst[ln] = Float.parseFloat(cols[5]); //adjusted_close
+				prclst[ln] = Float.parseFloat(cols[4]); //close
 			}
 			out.put(tkrs[i], prclst);
 		}

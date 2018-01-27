@@ -5,13 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.net.Uri;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.telephony.IccOpenLogicalChannelResponse;
 import android.view.*;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -59,14 +68,57 @@ public class SettingsActivity extends Activity
 			}
 		});
 
+		((ImageButton) findViewById(R.id.btnLog)).setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				if (((TextView)findViewById(R.id.txtLog)).getVisibility() == View.GONE)
+				{
+					//set log visible, hide save\cancel\title, leave cat button only
+					((ImageButton) findViewById(R.id.btnLog)).setImageResource(R.drawable.cathead20red);
+					((View)findViewById(R.id.txtLog)).setVisibility(View.VISIBLE);
+					findViewById(R.id.btnSave).setVisibility(View.GONE);
+					findViewById(R.id.btnCancel).setVisibility(View.GONE);
+					findViewById(R.id.txtSettingTitle).setVisibility(View.GONE);
+					findViewById(R.id.txtSettings).setVisibility(View.GONE);
+					findViewById(R.id.grdKeyChart).setVisibility(View.GONE);
+					((TextView)findViewById(R.id.txtLog)).setText("--- Log Cat ---\n" + Util.GetCatLog(new StringBuilder(), true).toString());
+				}
+				else //show settings buttons
+				{
+					((ImageButton) findViewById(R.id.btnLog)).setImageResource(R.drawable.cathead20);
+					((View)findViewById(R.id.txtLog)).setVisibility(View.GONE);
+					findViewById(R.id.btnSave).setVisibility(View.VISIBLE);
+					findViewById(R.id.btnCancel).setVisibility(View.VISIBLE);
+					findViewById(R.id.txtSettingTitle).setVisibility(View.VISIBLE);
+					findViewById(R.id.txtSettings).setVisibility(View.VISIBLE);
+					findViewById(R.id.grdKeyChart).setVisibility(View.VISIBLE);
+				}
+			}
+		});
+
 		((Button) findViewById(R.id.btnCancel)).setOnClickListener(new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View view)
 			{
-				finish(); //cancel save, can also use back button
+				finish(); //cancel save, close window, can also use back button
 			}
 		});
+
+		SetBoxWidths(); //API Key and Chart URL
+	}
+
+	public void SetBoxWidths() //android bug, API Key and URL boxes stretch off screen, must manually set width
+	{
+		Point sz = new Point();
+		getWindowManager().getDefaultDisplay().getSize(sz); //screen dimensions
+		//assume portrait
+		int screenWidth = sz.x;
+		int screenHeight = sz.y;
+		((EditText)findViewById(R.id.txtAPIKey)).setWidth(screenWidth - ((TextView)findViewById(R.id.txtAPIKeyX)).getWidth()-150);
+		((EditText)findViewById(R.id.txtChartURL)).setWidth(screenWidth - ((TextView)findViewById(R.id.txtChartURLX)).getWidth()-150);
 	}
 
 	public static void LoadSettings() //load from preferences
@@ -83,6 +135,7 @@ public class SettingsActivity extends Activity
 
 	public static int ParseSettings()
 	{
+		Util.LI("ParseSettings");
 		String ps = Util.GetPreference("settings", null); //filter items
 		if (ps == null) return 0; //no settings stored
 		String fname = "";
@@ -137,11 +190,11 @@ public class SettingsActivity extends Activity
 						ii[i] = Integer.parseInt(sx[i]);
 					ScanSvc.Filters.get(fname).ShowSpans = ii;
 				} else
-					Util.ShowToast("Unknown Setting: " + ss[0]);
+					Util.LE("Unknown Setting: " + ss[0]);
 			}
 			catch (Exception ex)
 			{
-				Util.ShowToast("Parse Error:\n" + s + "\n" + ex.getMessage());
+				Util.LE("Parse Error:\n" + s + "\n" + ex.getMessage());
 			}
 		}
 		return ScanSvc.Filters.size();
@@ -149,6 +202,7 @@ public class SettingsActivity extends Activity
 
 	private static String SetDefaultSettings() //in app, set settings to blank to get default settings
 	{
+		Util.LI("SetDefaultSettings");
 		StringBuilder sbSettings = new StringBuilder();
 		sbSettings.append("stk=TNA,BRZU,LABU,TECL,NAIL,DRN,DFEN,UBIO,JPNL,LBJ,UTSL,PILL,VIX,UGAZ,UWTI\n"); //must specify specific watch list
 		sbSettings.append("pctchange=-10\n"); //filter on pct change
