@@ -51,7 +51,7 @@ public class MainActivity extends Activity //main display screen
 		txtUpdateTime = (TextView) findViewById(R.id.txtUpdateTime);
 
 		btnService = (Button) findViewById(R.id.btnService);
-		btnService.setText((ScanSvc.mSvcStarted ? "Stop" : "Start") + " Service"); //upper case on button
+		btnService.setText((ScanSvc.mInstance == null ? "Start" : "Stop") + " Service"); //upper case on button
 		btnService.setOnClickListener(new View.OnClickListener() //start\stop service
 		{
 			@Override
@@ -59,7 +59,7 @@ public class MainActivity extends Activity //main display screen
 			{
 				//start service
 				Intent svc = new Intent(getBaseContext(), ScanSvc.class);
-				if (!ScanSvc.mSvcStarted) //if not started
+				if (ScanSvc.mInstance == null) //if not started
 				{
 					((Button) findViewById(R.id.btnRefresh)).setEnabled(false);
 					((Button) findViewById(R.id.btnService)).setEnabled(false);
@@ -67,7 +67,7 @@ public class MainActivity extends Activity //main display screen
 				}
 				else //already started, so attempt stop
 					//stopService returns true if stopped successfully
-					ScanSvc.mSvcStarted = !getApplicationContext().stopService(svc);
+					getApplicationContext().stopService(svc);
 			}
 		});
 
@@ -78,8 +78,15 @@ public class MainActivity extends Activity //main display screen
 			@Override
 			public void onClick(View view)
 			{
-				if (ScanSvc.mSvcStarted && ScanSvc.mDataLoading)
+				Util.LI("Refresh Click");
+				//data load must run in background thread, so restart timer
+				if (ScanSvc.mInstance != null)
+				{
+					if (ScanSvc.mDataLoading)
 					Util.ShowToast("Data loading. Please wait.");
+				else
+						ScanSvc.mInstance.StartTimer(); //restart timer
+				}
 				else
 				ShowStockList(false); //update shown list from service, does not run filter if svc running
 			}
@@ -156,7 +163,7 @@ public class MainActivity extends Activity //main display screen
 		((Button) findViewById(R.id.btnRefresh)).setEnabled(false);
 		((Button) findViewById(R.id.btnService)).setEnabled(false);
 		//if service not running, start svc, show list, stop svc
-		if (!restoreGUI && !ScanSvc.mSvcStarted && !ScanSvc.mRefreshOnly) //run filters without service, this method called twice
+		if (!restoreGUI && ScanSvc.mInstance == null && !ScanSvc.mRefreshOnly) //run filters without service, this method called twice
 		{
 			ScanSvc.mRefreshOnly = true; //stop service after refresh
 			getApplicationContext().startService(new Intent(getBaseContext(), ScanSvc.class)); //network error if run from UI thread

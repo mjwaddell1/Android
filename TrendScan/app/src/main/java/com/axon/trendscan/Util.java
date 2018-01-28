@@ -108,14 +108,14 @@ public class Util
 
 	public static void LI(String msg, boolean showToast)
 	{
-		Log.i("TrendScan", msg); //info
+		Log.i("TrScn", msg); //info
 		if (showToast)
 			ShowToast(msg);
 	}
 
 	public static void LE(String msg)
 	{
-		Log.e("TrendScan", msg); //error
+		Log.e("TrScn", msg); //error
 		ShowToast(msg);
 	}
 
@@ -126,13 +126,13 @@ public class Util
 		//final StringBuilder log = new StringBuilder("-- LOG --\n");
 		try
 		{
-			logcat = Runtime.getRuntime().exec(new String[]{"logcat", "-d"});
+			logcat = Runtime.getRuntime().exec(new String[]{"logcat", "-d", "-s", "TrScn"});
 			BufferedReader br = new BufferedReader(new InputStreamReader(logcat.getInputStream()), 4 * 1024);
 			String line;
 			String separator = System.getProperty("line.separator");
 			while ((line = br.readLine()) != null)
 			{
-				if (line.contains("TrendScan")) //skip system logs, only show app logs
+				if (line.contains("TrScn")) //skip system logs, only show app logs
 				{
 					if (reverse) //last entry first
 					{

@@ -7,8 +7,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
+
 
 import java.util.*;
 
@@ -16,14 +17,15 @@ import static android.app.PendingIntent.getActivity;
 
 public class ScanSvc extends Service { //runs in background
 
-	public static boolean mSvcStarted = false;
+	//public static boolean mSvcStarted = false;
 	public static boolean mRefreshOnly = false; //run service only to show stock list, then end
 	public static String strStockList = "<not set>"; //for notification
 	public static Date dtLastCheck = new Date(); //shown on GUI
-	public static Date dtLastTrigger = new Date();
+	public static long lastTrigger = -99999; //ms since boot, force first run
 	public static Hashtable<String,Filter> Filters = new Hashtable<>();
 	public static Bundle saveState = null;
 	public static boolean mDataLoading = false;
+	public static ScanSvc mInstance = null;
 
 	Timer timer = null;
 
@@ -38,22 +40,22 @@ public class ScanSvc extends Service { //runs in background
 
 	//Called when the service is being created.
 	@Override
-	public void onCreate() //service started
+	public void onCreate() //service created, only called once
 	{
 		Util.LI("************\nService onCreate"); //shows as separate entries
-		mSvcStarted = true;
-		dtLastCheck = dtLastTrigger = new Date(); //now
 		startForeground(1, DoNotify("no stocks")); //keep service alive if GUI exits
 	}
 
 	//The service is starting, due to a call to startService()
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		mSvcStarted = true;
 		Util.LI("Service onStartCommand");
+		mInstance = this;
+		//mSvcStarted = true;
+		dtLastCheck = new Date(); //now
 		StartTimer(); //rerun stock filters
-		MainActivity.mMainActivity.btnService.setText((ScanSvc.mSvcStarted ? "Stop" : "Start") + " Service");
-		MainActivity.mMainActivity.txtUpdateTime.setText("SERVICE " + (ScanSvc.mSvcStarted ? "STARTED" : "STOPPED"));
+		MainActivity.mMainActivity.btnService.setText((ScanSvc.mInstance == null ? "Start" : "Stop") + " Service");
+		MainActivity.mMainActivity.txtUpdateTime.setText("SERVICE " + (ScanSvc.mInstance == null ? "STOPPED" : "STARTED"));
 		return START_STICKY; //service started\stopped manually
 	}
 
@@ -77,31 +79,44 @@ public class ScanSvc extends Service { //runs in background
 	@Override
 	public void onDestroy() {
 		Util.LI("Service onDestroy");
-		mSvcStarted = false;
+		mInstance = null;
+		//mSvcStarted = false;
 		timer.cancel();
-		MainActivity.mMainActivity.btnService.setText((ScanSvc.mSvcStarted ? "Stop" : "Start") + " Service");
-		MainActivity.mMainActivity.txtUpdateTime.setText("SERVICE " + (ScanSvc.mSvcStarted ? "STARTED" : "STOPPED"));
+		MainActivity.mMainActivity.btnService.setText((ScanSvc.mInstance == null ? "Start" : "Stop") + " Service");
+		MainActivity.mMainActivity.txtUpdateTime.setText("SERVICE " + (ScanSvc.mInstance == null ? "STOPPED" : "STARTED"));
 
-		Toast.makeText(this, "Service Stopped", Toast.LENGTH_LONG).show();
+		Util.LI("Service Stopped", true);
 		((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancelAll(); //remove notification
 	}
 
 	public void StartTimer() {
+		//timer is inconsistent, sometimes 1 hour, sometimes constant loop, so must check time gap
+		if (timer != null) //may be called by Refresh button, so restart timer
+			timer.cancel(); //kill existing timer
+		lastTrigger = -99999; //immediately do stock check
 		TimerTask repeatedTask = new TimerTask() {
 			public void run() {
 				TimerHit();
 			}
 		};
-		timer = new Timer("Timer");
+		//name timer thread for logging, check for multiple timers
+		timer = new Timer("Tmr:" + SystemClock.elapsedRealtime()); //milliseconds since boot
 
-		long delay = 1*1000L; //milliseconds (1 second)
-		long period = 30*60*1000L; //30 minutes
+		long delay = 1*1000L; //milliseconds (1 second) first hit
+		long period = 1*60*1000L; //1 minute
 		timer.scheduleAtFixedRate(repeatedTask, delay, period);
 	}
 
+	public static long CheckGap = 10 * 60 * 1000L; //time between checks, 10 minutes
 	private void TimerHit()
 	{
-		Util.LI("TimerHit FCnt=" + Filters.size()); DoStockCheck(this);
+		Util.LI(Thread.currentThread().getName()); //timer name
+		Date now = new Date();
+		if (mRefreshOnly || SystemClock.elapsedRealtime() - lastTrigger  > CheckGap)
+		{
+			DoStockCheck(this);
+			lastTrigger = SystemClock.elapsedRealtime();
+		}
 	}
 
 	public boolean firstRun = true; //service just started
@@ -136,7 +151,7 @@ public class ScanSvc extends Service { //runs in background
 				Util.LI("TickCnt " + k + " " + f.TickerList.size() +"|"+ cnt, true);
 			}
 
-			if (svc != null && (svc.firstRun || !strNoteNew.equals(svc.strNote))) //service running && notification changed
+			if (!mRefreshOnly && svc != null && (svc.firstRun || !strNoteNew.equals(svc.strNote))) //service running && notification changed
 			{
 				svc.strNote = strNoteNew;
 				svc.DoNotify(svc.strNote); //show notification
