@@ -39,6 +39,8 @@ public class MainActivity extends Activity //main display screen
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
+		try
+		{
 		super.onCreate(savedInstanceState);
 		//savedInstanceState is always null for some reason, so store in service
 		if (savedInstanceState == null && ScanSvc.saveState != null)
@@ -64,8 +66,7 @@ public class MainActivity extends Activity //main display screen
 					((Button) findViewById(R.id.btnRefresh)).setEnabled(false);
 					((Button) findViewById(R.id.btnService)).setEnabled(false);
 					getApplicationContext().startService(svc); //start service
-				}
-				else //already started, so attempt stop
+					} else //already started, so attempt stop
 					//stopService returns true if stopped successfully
 					getApplicationContext().stopService(svc);
 			}
@@ -80,14 +81,13 @@ public class MainActivity extends Activity //main display screen
 			{
 				Util.LI("Refresh Click");
 				//data load must run in background thread, so restart timer
-				if (ScanSvc.mInstance != null)
+					if (ScanSvc.mInstance != null) //service running
 				{
 					if (ScanSvc.mDataLoading)
 					Util.ShowToast("Data loading. Please wait.");
 				else
 						ScanSvc.mInstance.StartTimer(); //restart timer
-				}
-				else
+					} else
 				ShowStockList(false); //update shown list from service, does not run filter if svc running
 			}
 		});
@@ -112,13 +112,26 @@ public class MainActivity extends Activity //main display screen
 			ShowStockList(true); //parse saved data, show list on gui
 		}
 	}
+		catch (Exception ex)
+		{
+			Util.LE("Act.onCreate:" + ex.getMessage());
+		}
+	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) //user switching apps or rotating
 	{
+		try
+		{
+
 		super.onSaveInstanceState(outState);
 		SerializeFilters(outState); //save filter data
 		ScanSvc.saveState = outState; //Android not storing state correctly so store in service
+		}
+		catch (Exception ex)
+		{
+			Util.LE("Act.onCreate:" + ex.getMessage());
+		}
 	}
 
 	@Override

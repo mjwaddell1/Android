@@ -107,7 +107,7 @@ public class ScanSvc extends Service { //runs in background
 		timer.scheduleAtFixedRate(repeatedTask, delay, period);
 	}
 
-	public static long CheckGap = 10 * 60 * 1000L; //time between checks, 10 minutes
+	public static long CheckGap = 15 * 60 * 1000L; //time between checks, 10 minutes
 	private void TimerHit()
 	{
 		Util.LI(Thread.currentThread().getName()); //timer name
@@ -157,8 +157,8 @@ public class ScanSvc extends Service { //runs in background
 				svc.DoNotify(svc.strNote); //show notification
 			}
 
-			if (mRefreshOnly || svc.firstRun) //update displayed stock list
-			{
+			//if (mRefreshOnly || svc.firstRun) //update displayed stock list
+			//{
 				MainActivity.mMainActivity.runOnUiThread(new Runnable() {
 					public void run()
 					{
@@ -166,7 +166,7 @@ public class ScanSvc extends Service { //runs in background
 						MainActivity.mMainActivity.ShowStockList(false);
 					}
 				});
-			}
+			//}
 			svc.firstRun = false;
 		}
 		catch(Exception ex)
