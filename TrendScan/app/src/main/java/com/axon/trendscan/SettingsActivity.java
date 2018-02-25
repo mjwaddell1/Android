@@ -29,8 +29,6 @@ public class SettingsActivity extends Activity
 {
 
 	//defaults
-	//API Key from Alpha Vantage (free) data service
-	static String APIKey = "XXXXXXXX"; //get free API key here - https://www.alphavantage.co/support/#api-key
 	//if user clicks chart image, open site, {SYMBOL} is replaced with actual symbol
 	static String ChartURL = "https://finviz.com/quote.ashx?t={SYMBOL}&ty=c&ta=0&p=d";
 
@@ -41,7 +39,6 @@ public class SettingsActivity extends Activity
 		setContentView(R.layout.activity_settings);
 		//load settings from preferences
 		((EditText)findViewById(R.id.txtSettings)).setText(Util.GetPreference("settings", null));
-		((EditText)findViewById(R.id.txtAPIKey)).setText(Util.GetPreference("APIKey", APIKey));
 		((EditText)findViewById(R.id.txtChartURL)).setText(Util.GetPreference("ChartURL", ChartURL));
 
 		((Button) findViewById(R.id.btnSave)).setOnClickListener(new View.OnClickListener()
@@ -57,11 +54,9 @@ public class SettingsActivity extends Activity
 				ParseSettings(); //parse filter items
 
 				//get text from GUI
-				APIKey = ((EditText)findViewById(R.id.txtAPIKey)).getText().toString();
 				ChartURL = ((EditText)findViewById(R.id.txtChartURL)).getText().toString();
 
 				//write to storage
-				Util.SavePreference("APIKey", APIKey);
 				Util.SavePreference("ChartURL", ChartURL);
 
 				finish(); //close settings
@@ -117,7 +112,6 @@ public class SettingsActivity extends Activity
 		//assume portrait
 		int screenWidth = sz.x;
 		int screenHeight = sz.y;
-		((EditText)findViewById(R.id.txtAPIKey)).setWidth(screenWidth - ((TextView)findViewById(R.id.txtAPIKeyX)).getWidth()-150);
 		((EditText)findViewById(R.id.txtChartURL)).setWidth(screenWidth - ((TextView)findViewById(R.id.txtChartURLX)).getWidth()-150);
 	}
 
@@ -129,7 +123,6 @@ public class SettingsActivity extends Activity
 		}
 		ParseSettings(); //parse settings text box
 
-		APIKey = Util.GetPreference("APIKey", APIKey); //free from Alpha Vantage
 		ChartURL = Util.GetPreference("ChartURL", ChartURL); //if user clicks chart
 	}
 

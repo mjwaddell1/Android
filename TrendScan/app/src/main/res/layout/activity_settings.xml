@@ -76,36 +76,26 @@
 	            android:visibility="gone"
                 android:background="#f2c4a2"/>
 
-            <EditText
-                android:text="--- List Here ---"
-                android:textSize="15dp"
-                android:id="@+id/txtSettings"
-                android:gravity="left"
-                android:padding="6dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-	            android:layout_margin="3dp"
-                android:background="#a8e1e4"/>
+	        <EditText
+		        android:text="--- List Here ---"
+		        android:textSize="15dp"
+		        android:id="@+id/txtSettings"
+		        android:gravity="left"
+		        android:padding="6dp"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_margin="3dp"
+		        android:background="#a8e1e4"/>
 
 
-<GridLayout
+	        <GridLayout
 	android:id="@+id/grdKeyChart"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:columnCount="2"
 	android:rowCount="2"
 	android:layout_margin="3dp">
-	<TextView android:id="@+id/txtAPIKeyX" android:text="API Key: " android:layout_row="0" android:layout_column="0"/>
 	<TextView android:id="@+id/txtChartURLX" android:text="Chart: " android:layout_row="1" android:layout_column="0"/>
-	<EditText android:id="@+id/txtAPIKey"
-		android:layout_row="0"
-		android:layout_column="1"
-		android:layout_gravity="fill_horizontal"
-		android:background="#AAFFAA"
-		android:layout_marginBottom="2dp"
-		android:paddingStart="2dp"
-		android:layout_weight = "1"
-		android:layout_height="wrap_content"/>
 
 	<EditText android:id="@+id/txtChartURL"
         android:layout_weight = "1"

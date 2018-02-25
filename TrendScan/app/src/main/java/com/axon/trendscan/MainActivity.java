@@ -41,77 +41,77 @@ public class MainActivity extends Activity //main display screen
 	{
 		try
 		{
-		super.onCreate(savedInstanceState);
-		//savedInstanceState is always null for some reason, so store in service
-		if (savedInstanceState == null && ScanSvc.saveState != null)
-			savedInstanceState = ScanSvc.saveState; //use state from service
+			super.onCreate(savedInstanceState);
+			//savedInstanceState is always null for some reason, so store in service
+			if (savedInstanceState == null && ScanSvc.saveState != null)
+				savedInstanceState = ScanSvc.saveState; //use state from service
 
-		setContentView(R.layout.activity_main);
+			setContentView(R.layout.activity_main);
 
-		mMainActivity = this; //referenced by other classes
+			mMainActivity = this; //referenced by other classes
 
-		txtUpdateTime = (TextView) findViewById(R.id.txtUpdateTime);
+			txtUpdateTime = (TextView) findViewById(R.id.txtUpdateTime);
 
-		btnService = (Button) findViewById(R.id.btnService);
-		btnService.setText((ScanSvc.mInstance == null ? "Start" : "Stop") + " Service"); //upper case on button
-		btnService.setOnClickListener(new View.OnClickListener() //start\stop service
-		{
-			@Override
-			public void onClick(View view)
+			btnService = (Button) findViewById(R.id.btnService);
+			btnService.setText((ScanSvc.mInstance == null ? "Start" : "Stop") + " Service"); //upper case on button
+			btnService.setOnClickListener(new View.OnClickListener() //start\stop service
 			{
-				//start service
-				Intent svc = new Intent(getBaseContext(), ScanSvc.class);
-				if (ScanSvc.mInstance == null) //if not started
+				@Override
+				public void onClick(View view)
 				{
-					((Button) findViewById(R.id.btnRefresh)).setEnabled(false);
-					((Button) findViewById(R.id.btnService)).setEnabled(false);
-					getApplicationContext().startService(svc); //start service
+					//start service
+					Intent svc = new Intent(getBaseContext(), ScanSvc.class);
+					if (ScanSvc.mInstance == null) //if not started
+					{
+						((Button) findViewById(R.id.btnRefresh)).setEnabled(false);
+						((Button) findViewById(R.id.btnService)).setEnabled(false);
+						getApplicationContext().startService(svc); //start service
 					} else //already started, so attempt stop
-					//stopService returns true if stopped successfully
-					getApplicationContext().stopService(svc);
-			}
-		});
+						//stopService returns true if stopped successfully
+						getApplicationContext().stopService(svc);
+				}
+			});
 
-		//Refresh button refreshes stock list on GUI. Will start\stop service if svc not running
-		btnRefresh = (Button) findViewById(R.id.btnRefresh);
-		btnRefresh.setOnClickListener(new View.OnClickListener() //Refresh button
-		{
-			@Override
-			public void onClick(View view)
+			//Refresh button refreshes stock list on GUI. Will start\stop service if svc not running
+			btnRefresh = (Button) findViewById(R.id.btnRefresh);
+			btnRefresh.setOnClickListener(new View.OnClickListener() //Refresh button
 			{
-				Util.LI("Refresh Click");
-				//data load must run in background thread, so restart timer
-					if (ScanSvc.mInstance != null) //service running
+				@Override
+				public void onClick(View view)
 				{
-					if (ScanSvc.mDataLoading)
-					Util.ShowToast("Data loading. Please wait.");
-				else
-						ScanSvc.mInstance.StartTimer(); //restart timer
+					Util.LI("Refresh Click");
+					//data load must run in background thread, so restart timer
+					if (ScanSvc.mInstance != null) //service running
+					{
+						if (ScanSvc.mDataLoading)
+							Util.ShowToast("Data loading. Please wait.");
+						else
+							ScanSvc.mInstance.StartTimer(); //restart timer
 					} else
-				ShowStockList(false); //update shown list from service, does not run filter if svc running
-			}
-		});
+						ShowStockList(false); //update shown list from service, does not run filter if svc running
+				}
+			});
 
-		//separate activity for settings
-		((Button) findViewById(R.id.btnSettings)).setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View view)
+			//separate activity for settings
+			((Button) findViewById(R.id.btnSettings)).setOnClickListener(new View.OnClickListener()
 			{
-				Intent ss = new Intent(MainActivity.this, SettingsActivity.class);
-				startActivity(ss);
+				@Override
+				public void onClick(View view)
+				{
+					Intent ss = new Intent(MainActivity.this, SettingsActivity.class);
+					startActivity(ss);
+				}
+			});
+
+			SettingsActivity.LoadSettings(); //load from pref storage
+
+			//use savedInstanceState so gui is not cleared on rotate\restore
+			if (savedInstanceState != null && !savedInstanceState.isEmpty()) //user rotated app or switched back to app
+			{
+				DeserializeFilters(savedInstanceState); //recreate filters
+				ShowStockList(true); //parse saved data, show list on gui
 			}
-		});
-
-		SettingsActivity.LoadSettings(); //load from pref storage
-
-		//use savedInstanceState so gui is not cleared on rotate\restore
-		if (savedInstanceState != null && !savedInstanceState.isEmpty()) //user rotated app or switched back to app
-		{
-			DeserializeFilters(savedInstanceState); //recreate filters
-			ShowStockList(true); //parse saved data, show list on gui
 		}
-	}
 		catch (Exception ex)
 		{
 			Util.LE("Act.onCreate:" + ex.getMessage());
@@ -123,10 +123,9 @@ public class MainActivity extends Activity //main display screen
 	{
 		try
 		{
-
-		super.onSaveInstanceState(outState);
-		SerializeFilters(outState); //save filter data
-		ScanSvc.saveState = outState; //Android not storing state correctly so store in service
+			super.onSaveInstanceState(outState);
+			SerializeFilters(outState); //save filter data
+			ScanSvc.saveState = outState; //Android not storing state correctly so store in service
 		}
 		catch (Exception ex)
 		{
@@ -352,7 +351,7 @@ public class MainActivity extends Activity //main display screen
 			return cnt;
 		} catch (Exception ex)
 		{
-			Toast.makeText(mMainActivity, ex.getMessage(), Toast.LENGTH_LONG).show();
+			Util.LE(ex.getMessage());
 			return -1;
 		}
 	}

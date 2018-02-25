@@ -3,6 +3,8 @@ package com.axon.trendscan;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.text.Html;
 import android.util.Log;
 import android.widget.Toast;
@@ -101,22 +103,28 @@ public class Util
 		}
 	}
 
+	final static String LogTag = "TrScn";
 	public static void LI(String msg)
 	{
 		LI(msg, false);
-	}
+	} //info, default no toast
+	public static void LE(String msg)
+	{
+		LE(msg, true);
+	} //error, default toast
 
 	public static void LI(String msg, boolean showToast)
 	{
-		Log.i("TrScn", msg); //info
+		Log.i(LogTag, msg); //info
 		if (showToast)
 			ShowToast(msg);
 	}
 
-	public static void LE(String msg)
+	public static void LE(String msg, boolean showToast)
 	{
-		Log.e("TrScn", msg); //error
-		ShowToast(msg);
+		Log.e(LogTag, msg); //error
+		if (showToast)
+			ShowToast(msg);
 	}
 
 	public static StringBuilder GetCatLog(StringBuilder log, boolean reverse)
@@ -126,13 +134,13 @@ public class Util
 		//final StringBuilder log = new StringBuilder("-- LOG --\n");
 		try
 		{
-			logcat = Runtime.getRuntime().exec(new String[]{"logcat", "-d", "-s", "TrScn"});
+			logcat = Runtime.getRuntime().exec(new String[]{"logcat", "-d", "-s", LogTag});
 			BufferedReader br = new BufferedReader(new InputStreamReader(logcat.getInputStream()), 4 * 1024);
 			String line;
 			String separator = System.getProperty("line.separator");
 			while ((line = br.readLine()) != null)
 			{
-				if (line.contains("TrScn")) //skip system logs, only show app logs
+				if (line.contains(LogTag)) //skip system logs, only show app logs
 				{
 					if (reverse) //last entry first
 					{

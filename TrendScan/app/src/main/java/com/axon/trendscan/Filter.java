@@ -92,7 +92,7 @@ public class Filter
 			String stks = "";
 			TickerList.clear();
 			Hashtable<String, String> comps = new Hashtable<>();
-			if (Util.GetPreference("StockNames" + FilterName, "").isEmpty())
+			if (Util.GetPreference("StockNames" + FilterName, "").isEmpty()) //can force refresh, re-save settings
 				comps = Feed.GetStockNames(Tkrs); //from data feed
 			else //get from preferences - AAPL=APPLE|LABU=DIREXION DAILY S&P BIOTECH BULL|VIX=CBOE VOLATILITY INDEX S&P500
 			{

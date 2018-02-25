@@ -21,7 +21,8 @@ public class ScanSvc extends Service { //runs in background
 	public static boolean mRefreshOnly = false; //run service only to show stock list, then end
 	public static String strStockList = "<not set>"; //for notification
 	public static Date dtLastCheck = new Date(); //shown on GUI
-	public static long lastTrigger = -99999; //ms since boot, force first run
+	public static long CheckGap = 15 * 60 * 1000L; //time between checks, 15 minutes
+	public static long lastTrigger = -2 * CheckGap; //ms since boot, force first run
 	public static Hashtable<String,Filter> Filters = new Hashtable<>();
 	public static Bundle saveState = null;
 	public static boolean mDataLoading = false;
@@ -107,16 +108,31 @@ public class ScanSvc extends Service { //runs in background
 		timer.scheduleAtFixedRate(repeatedTask, delay, period);
 	}
 
-	public static long CheckGap = 15 * 60 * 1000L; //time between checks, 10 minutes
 	private void TimerHit()
 	{
-		Util.LI(Thread.currentThread().getName()); //timer name
+		//Util.LI(Thread.currentThread().getName()); //timer name
+		if (!firstRun && !mRefreshOnly) //always load data at svc start
+		{
+			if (!MarketOpen())
+				return; //market closed
+		}
 		Date now = new Date();
 		if (mRefreshOnly || SystemClock.elapsedRealtime() - lastTrigger  > CheckGap)
 		{
 			DoStockCheck(this);
 			lastTrigger = SystemClock.elapsedRealtime();
 		}
+	}
+
+	public boolean MarketOpen()
+	{
+		Calendar c = new GregorianCalendar(); //now
+		if (c.get(Calendar.DAY_OF_WEEK) == android.icu.util.Calendar.SATURDAY ||
+				c.get(Calendar.DAY_OF_WEEK) == android.icu.util.Calendar.SUNDAY ||
+				(c.get(Calendar.HOUR_OF_DAY) == 9 && c.get(Calendar.MINUTE) < 30) ||
+				c.get(Calendar.HOUR_OF_DAY) < 9 || c.get(Calendar.HOUR_OF_DAY) >= 16) //9:30am - 4pm
+			return false; //closed
+		return true; //market open
 	}
 
 	public boolean firstRun = true; //service just started
