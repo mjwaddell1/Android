@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        tools:context="com.axon.droidscan.SettingsActivity">
+
+	<ScrollView
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_margin="0dp"
+		android:padding="0dp"
+		android:layout_alignParentTop="true"
+		android:layout_alignParentStart="true">
+
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:orientation="vertical"
+                      android:layout_margin="0dp"
+                      android:padding="0dp"
+                      android:id="@+id/linStgMain">
+
+            <TextView
+                android:text="--- SETTINGS ---     "
+                android:id="@+id/txtSettingTitle"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:textSize="18dp"
+                android:textColor="#0e890c"/>
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal"
+                  android:layout_marginBottom="5dp"
+                  android:gravity="center_horizontal"
+                  android:padding="0dp"
+                  android:id="@+id/linStg">
+
+
+        <Button android:layout_width="wrap_content"
+                android:id="@+id/btnSave"
+                android:layout_height="30dp"
+                android:padding="0dp"
+                android:textAllCaps="false"
+                android:text="Save"/>
+        <Button android:layout_width="wrap_content"
+                android:id="@+id/btnCancel"
+                android:layout_height="30dp"
+                android:padding="0dp"
+                android:textAllCaps="false"
+                android:text="Cancel"/>
+        <Button android:layout_width="wrap_content"
+                android:id="@+id/btnShowFilters"
+                android:layout_height="30dp"
+                android:padding="0dp"
+                android:textAllCaps="false"
+                android:text="Filters"/>
+	    <ImageButton android:layout_width="30dp"
+	                 android:id="@+id/btnLog"
+	                 android:layout_marginTop="5dp"
+	                 android:layout_height="20dp"
+	                 android:padding="0dp"
+	                 android:background="@android:color/transparent"
+	                 android:src="@drawable/cathead20"/>
+    </LinearLayout>
+
+	        <TextView
+		        android:text="--- Log ---"
+		        android:textSize="12dp"
+		        android:id="@+id/txtLog"
+		        android:gravity="left"
+		        android:padding="6dp"
+		        android:layout_width="match_parent"
+		        android:layout_height="match_parent"
+		        android:layout_margin="3dp"
+		        android:scrollbars="vertical"
+		        android:visibility="gone"
+		        android:background="#f2c4a2"/>
+
+	        <EditText
+                android:text="--- List Here ---"
+                android:textSize="15dp"
+                android:id="@+id/txtSettings"
+                android:gravity="left"
+                android:padding="6dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+	            android:layout_margin="3dp"
+                android:background="#a8e1e4"/>
+
+
+<GridLayout
+	android:id="@+id/grdKeyChart"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:columnCount="2"
+	android:rowCount="3"
+	android:layout_margin="3dp">
+	<TextView android:text="User: " android:layout_row="0" android:layout_column="0"/>
+	<TextView android:text="Pwd: " android:layout_row="1" android:layout_column="0"/>
+	<TextView android:text="Chart: " android:layout_row="2" android:layout_column="0"/>
+	<EditText android:id="@+id/txtUserName"
+		android:layout_row="0"
+		android:layout_column="1"
+		android:layout_gravity="fill_horizontal"
+		android:background="#AAFFAA"
+		android:layout_marginBottom="2dp"
+		android:paddingStart="2dp"
+		android:layout_height="wrap_content"/>
+
+	<EditText android:id="@+id/txtPassword"
+		android:layout_row="1"
+		android:layout_column="1"
+		android:layout_gravity="fill_horizontal"
+		android:background="#AAFFAA"
+		android:layout_marginBottom="2dp"
+		android:paddingStart="2dp"
+		android:layout_height="wrap_content"/>
+
+	<EditText android:id="@+id/txtChartURL"
+		android:layout_row="2"
+		android:layout_column="1"
+		android:layout_gravity="fill_horizontal"
+		android:background="#AAFFAA"
+		android:paddingStart="2dp"
+		android:layout_height="wrap_content"
+		android:maxLines="1"
+		android:scrollHorizontally="true"
+		android:marqueeRepeatLimit="marquee_forever"/>
+
+</GridLayout>
+        </LinearLayout>
+</ScrollView>
+
+</android.support.design.widget.CoordinatorLayout>
