@@ -168,6 +168,7 @@ public class ScanSvc extends Service {
 		try
 		{
 			Util.LI("DoStockCheck");
+			Util.GetMemoryInfo(true);
 			mDataLoading = true;
 			dtLastCheck = new Date(); //now
 

@@ -1,5 +1,6 @@
 package com.axon.droidscan;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
@@ -12,6 +13,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Hashtable;
+
+import static android.content.Context.ACTIVITY_SERVICE;
 
 public class Util
 {
@@ -265,6 +268,15 @@ public class Util
 		return out;
 	}
 
+	public static ActivityManager.MemoryInfo GetMemoryInfo(boolean log)
+	{
+		ActivityManager activityManager = (ActivityManager) MainActivity.mMainActivity.getSystemService(ACTIVITY_SERVICE);
+		ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+		activityManager.getMemoryInfo(memoryInfo);
+		if (log)
+			LI("Mem Free: " + memoryInfo.availMem + "/" + memoryInfo.totalMem);
+		return memoryInfo;
+	}
 
 	public static String StringJoin(String[] lst, String sep) //like C# string[].join
 	{

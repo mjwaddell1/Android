@@ -1,12 +1,15 @@
 package com.axon.droidscan;
 
+import android.app.ActivityManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.support.v7.util.AsyncListUtil;
 
 import java.util.Hashtable;
+import java.util.logging.Level;
 
 public class TickerInfo //single stock
 {
@@ -82,6 +85,11 @@ public class TickerInfo //single stock
 	// Bottom of chart is price=0, top is max price over last 6 mos
 	public Bitmap GetTickerChart()
 	{
+		try
+		{
+			ActivityManager.MemoryInfo mi = Util.GetMemoryInfo(false);
+			if (mi.lowMemory)
+				Util.LE("GetTickerChart Low Memory: " + mi.availMem + "/" + mi.totalMem);
 		//height and width are virtual, not actual pixels. Actual chart size determined in MainActivity (lpPop)
 		int width = 1000; //only for proportions
 		int height = 1000; //width * 2/3; //actual display size set in MainActivity
@@ -98,19 +106,28 @@ public class TickerInfo //single stock
 		//scale data points to bitmap width, height
 		float scaleX = (chartright - chartleft) / (float)Prices.length;
 		float scaleY = (charttop - chartbottom) / maxprice;
-		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+			Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ALPHA_8); //ARGB_8888
+
 		Canvas canvas = new Canvas(bitmap);
 
 		Paint paint = new Paint();
-		paint.setColor(Color.parseColor("#DD9EDD")); //border
-		paint.setStyle(Paint.Style.FILL);
-		canvas.drawPaint(paint);
-		paint.setColor(Color.parseColor("#FF9EFF")); //chart area
-		canvas.drawRect(chartleft, charttop, chartright, chartbottom, paint);
+			//removed color code, uses too much memory
+			//paint.setColor(Color.parseColor("#DD9EDD")); //border
+			//paint.setStyle(Paint.Style.FILL);
+			//canvas.drawPaint(paint);
+			//paint.setColor(Color.parseColor("#FF9EFF")); //chart area
+			//canvas.drawRect(chartleft, charttop, chartright, chartbottom, paint);
+
+			paint.setAlpha(50); //no color, % black
+			//borders
+			canvas.drawRect(0,0,1000,chartbottom,paint);  //bottom
+			canvas.drawRect(0,1000,1000,charttop,paint);  //top
+			canvas.drawRect(0,chartbottom,chartleft,charttop,paint);  //left
+			canvas.drawRect(1000,chartbottom,chartright,charttop,paint); //right
 
 		paint.setStrokeWidth(5);
 		paint.setAntiAlias(true);
-		paint.setColor(Color.parseColor("#DD9EDD"));
+			//paint.setColor(Color.parseColor("#DD9EDD"));
 
 		//1 month bars
 		for (int i = 0; i < Prices.length - 1; i++)
@@ -149,6 +166,12 @@ public class TickerInfo //single stock
 		//paint.setTextAlign(Paint.Align.CENTER);
 		//canvas.drawText("test", (width / 2.f) , (height / 2.f), paint);
 		return bitmap;
+		}
+		catch(Exception ex)
+		{
+			Util.LE("GetTickerChart: " + ex.getMessage());
+			return null;
+		}
 	}
 
 }

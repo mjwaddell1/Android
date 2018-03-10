@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.*;
@@ -38,6 +39,7 @@ public class SettingsActivity extends Activity
 			((EditText) findViewById(R.id.txtUserName)).setText(Util.GetPreference("UserName", UserName));
 			((EditText) findViewById(R.id.txtPassword)).setText(Util.GetPreference("Password", Password));
 			((EditText) findViewById(R.id.txtChartURL)).setText(Util.GetPreference("ChartURL", ChartURL));
+			SetBoxWidths();
 
 			((Button) findViewById(R.id.btnSave)).setOnClickListener(new View.OnClickListener()
 			{
@@ -119,6 +121,18 @@ public class SettingsActivity extends Activity
 		}
 	}
 
+	public void SetBoxWidths() //android bug, API Key and URL boxes stretch off screen, must manually set width
+	{
+		Point sz = new Point();
+		getWindowManager().getDefaultDisplay().getSize(sz); //screen dimensions
+		//assume portrait
+		int screenWidth = sz.x;
+		int screenHeight = sz.y;
+		((EditText)findViewById(R.id.txtUserName)).setWidth(screenWidth - ((TextView)findViewById(R.id.txtChartURLX)).getWidth()-150);
+		((EditText)findViewById(R.id.txtPassword)).setWidth(screenWidth - ((TextView)findViewById(R.id.txtChartURLX)).getWidth()-150);
+		((EditText)findViewById(R.id.txtChartURL)).setWidth(screenWidth - ((TextView)findViewById(R.id.txtChartURLX)).getWidth()-150);
+	}
+
 	public static void LoadSettings() //load from preferences
 	{
 		if (Util.GetPreference("settings", "").isEmpty())
@@ -162,6 +176,8 @@ public class SettingsActivity extends Activity
 						ScanSvc.Filters.get(fname).ButtonColor = Color.parseColor("#"+kv[1]); //#004400
 					if (kv[0].equals("INT"))
 						ScanSvc.Filters.get(fname).CheckInterval = Long.parseLong(kv[1])*60*1000L; //minutes to milliseconds
+					if (kv[0].equals("MAXCNT"))
+						ScanSvc.Filters.get(fname).MaxCnt = Integer.parseInt(kv[1]); //max stocks to process
 					continue;
 				}
 				//convert logic to Intrinio syntax
@@ -175,6 +191,7 @@ public class SettingsActivity extends Activity
 			for (String s : ScanSvc.Filters.keySet())
 			{
 				ScanSvc.Filters.get(s).FilterURL = ScanSvc.Filters.get(s).FilterURL.substring(0, ScanSvc.Filters.get(s).FilterURL.length() - 1); //remove last comma
+				Util.LI("Filter URL ["+ScanSvc.Filters.get(s).FilterName+"]: " + ScanSvc.Filters.get(s).FilterURL);
 				//https://api.intrinio.com/securities/search?conditions=bookvaluepershare~gt~25,currentratio~lt~1,debttoequity~lt~1 .....  (see Filter.java)
 			}
 			return ScanSvc.Filters.size();

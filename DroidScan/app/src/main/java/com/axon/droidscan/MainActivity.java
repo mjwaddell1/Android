@@ -2,6 +2,7 @@ package com.axon.droidscan;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
@@ -194,15 +195,15 @@ public class MainActivity extends Activity
 		//https://api.intrinio.com/usage/current?access_code=com_fin_data
 		try
 		{
-			LayoutParams lpMain = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 45);
 			LayoutParams lpPop = new LinearLayout.LayoutParams(100, 60);
-			lpMain.setMargins(0, 0, 0, 2);
 			lpPop.setMargins(10, 10, 0, 2);
 			Point sz = new Point();
 			getWindowManager().getDefaultDisplay().getSize(sz); //screen dimensions
 			int screenWidth = Math.min(sz.x, sz.y);
 			int screenHeight = Math.max(sz.x, sz.y);
 			int buttonHeight = screenHeight/30;
+			LayoutParams lpBtn = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, buttonHeight);
+			lpBtn.setMargins(0, 0, 0, 2);
 			LayoutParams lpChart = new LinearLayout.LayoutParams(screenWidth/2, screenWidth/2 * 2 / 3); //chart button
 			lpChart.setMargins(10, 10, 10, 10);
 
@@ -223,9 +224,14 @@ public class MainActivity extends Activity
 						continue; //dup stock, $IBM IBM.A
 					//create main button with symbol name
 					Button btn = new Button(this);
-					btn.setLayoutParams(lpMain);
-					btn.setPadding(15, 0, 0, 0);
+					btn.setLayoutParams(lpBtn);
 					btn.setAllCaps(false);
+					btn.setMinHeight(0);
+					btn.setMinimumHeight(0); //google fuckers
+					btn.setMinWidth(0);
+					btn.setMinimumWidth(0); //google fuckers
+					btn.setPadding(20,0,0,0);
+					btn.setWidth(screenWidth - 10);
 					if (f.FilterName.equals("~")) //default filter
 						btn.setText(ti.Ticker + " : " + (ti.CompanyName == null ? "" : ti.CompanyName));
 					else
@@ -246,7 +252,11 @@ public class MainActivity extends Activity
 					btnChart.setMinimumWidth(0);
 					btnChart.setAllCaps(false);
 					//chart image uses actual price history
+					Bitmap bm = ti.GetTickerChart();
+					if (bm != null)
 					btnChart.setBackground(new BitmapDrawable(this.getResources(),ti.GetTickerChart()));
+					else //out of memory
+						btnChart.setBackgroundColor(Color.GRAY);
 					btnChart.setGravity(Gravity.LEFT);
 					linPop.addView(btnChart);
 
