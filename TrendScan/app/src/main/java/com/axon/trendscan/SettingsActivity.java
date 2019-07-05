@@ -31,6 +31,7 @@ public class SettingsActivity extends Activity
 	//defaults
 	//if user clicks chart image, open site, {SYMBOL} is replaced with actual symbol
 	static String ChartURL = "https://finviz.com/quote.ashx?t={SYMBOL}&ty=c&ta=0&p=d";
+	static String Token = "pk_XXXXXXXXXXX"; //get this from https://iextrading.com/developer/
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -40,6 +41,7 @@ public class SettingsActivity extends Activity
 		//load settings from preferences
 		((EditText)findViewById(R.id.txtSettings)).setText(Util.GetPreference("settings", null));
 		((EditText)findViewById(R.id.txtChartURL)).setText(Util.GetPreference("ChartURL", ChartURL));
+		((EditText)findViewById(R.id.txtToken)).setText(Util.GetPreference("Token", Token));
 
 		((Button) findViewById(R.id.btnSave)).setOnClickListener(new View.OnClickListener()
 		{
@@ -55,9 +57,11 @@ public class SettingsActivity extends Activity
 
 				//get text from GUI
 				ChartURL = ((EditText)findViewById(R.id.txtChartURL)).getText().toString();
+				Token = ((EditText)findViewById(R.id.txtToken)).getText().toString();
 
 				//write to storage
 				Util.SavePreference("ChartURL", ChartURL);
+				Util.SavePreference("Token", Token);
 
 				finish(); //close settings
 			}
@@ -124,6 +128,7 @@ public class SettingsActivity extends Activity
 		ParseSettings(); //parse settings text box
 
 		ChartURL = Util.GetPreference("ChartURL", ChartURL); //if user clicks chart
+		Token = Util.GetPreference("Token", Token); //for API
 	}
 
 	public static int ParseSettings()
@@ -197,7 +202,7 @@ public class SettingsActivity extends Activity
 	{
 		Util.LI("SetDefaultSettings");
 		StringBuilder sbSettings = new StringBuilder();
-		sbSettings.append("stk=TNA,BRZU,LABU,TECL,NAIL,DRN,DFEN,UBIO,JPNL,LBJ,UTSL,PILL,VIX,UGAZ,UWTI\n"); //must specify specific watch list
+		sbSettings.append("stk=TNA,BRZU,LABU,TECL,NAIL,DRN,DFEN,UBIO,JPNL,LBJ,UTSL,PILL,VIX,UGAZ,UCO\n"); //must specify specific watch list
 		sbSettings.append("pctchange=-10\n"); //filter on pct change
 		sbSettings.append("dayspan=5\n"); //across previous X days
 		sbSettings.append("showspan=1,5,20\n"); //display on main gui button

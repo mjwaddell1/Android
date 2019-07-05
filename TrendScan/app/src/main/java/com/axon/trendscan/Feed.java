@@ -1,16 +1,22 @@
 package com.axon.trendscan;
+import android.text.StaticLayout;
+
 import java.util.Arrays;
 import java.util.Hashtable;
 
 public class Feed
 {
 
+	static String APIToken = Util.GetPreference("Token", "");
+
 	public static Hashtable<String, String> GetStockNames(String[] pTkrs) //get full name for tickers, if found
 	{
 		//sort symbols so we can traverse results just once
 		Arrays.sort(pTkrs);
 
-		String FilterURL = "https://api.iextrading.com/1.0/ref-data/symbols?format=CSV"; //or format=JSON, returns all stocks in alpha order
+
+		//String FilterURL = "https://api.iextrading.com/1.0/ref-data/symbols?format=CSV"; //or format=JSON, returns all stocks in alpha order
+		String FilterURL = "https://cloud.iexapis.com/stable/ref-data/symbols?format=CSV&token=" + APIToken; //or format=JSON, returns all stocks in alpha order
 
 		Hashtable<String, String> TickerList = new Hashtable<>();
 		try
@@ -57,7 +63,7 @@ public class Feed
 					@Override
 					public void run()
 					{
-						String url = "https://api.iextrading.com/1.0/stock/"+tkrs[ctr]+"/chart/1y?format=CSV"; //1 year of data, latest date at bottom
+						String url = "https://cloud.iexapis.com/stable/stock/"+tkrs[ctr]+"/chart/1y?format=CSV&token=" + APIToken; //1 year of data, latest date at bottom
 						tkrData[ctr] = new StringBuilder();
 						Util.GetWebData(tkrData[ctr], url, 2); //skip header
 					}
@@ -110,7 +116,7 @@ public class Feed
 			//String uri = "https://api.iextrading.com/1.0/stock/market/batch?symbols="+alltkrs+"&types=quote&format=JSON";
 			//String uri = "https://api.iextrading.com/1.0/tops/last?symbols="+alltkrs+"&format=csv";
 			//delayed quote seems to have most accurate information
-			String uri = "https://api.iextrading.com/1.0/stock/market/batch?symbols="+alltkrs+"&types=delayed-quote&format=JSON";
+			String uri = "https://cloud.iexapis.com/stable/stock/market/batch?symbols="+alltkrs+"&types=delayed-quote&format=JSON&token=" + APIToken;
 			Util.GetWebData(sb, uri, 0);
 			int cnt = out.size(); //ensure we get each symbol
 			for (String tkr : tkrs)

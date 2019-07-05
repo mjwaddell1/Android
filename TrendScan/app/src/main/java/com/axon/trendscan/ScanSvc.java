@@ -94,7 +94,7 @@ public class ScanSvc extends Service { //runs in background
 		//timer is inconsistent, sometimes 1 hour, sometimes constant loop, so must check time gap
 		if (timer != null) //may be called by Refresh button, so restart timer
 			timer.cancel(); //kill existing timer
-		lastTrigger = -99999; //immediately do stock check
+		lastTrigger = -2 * CheckGap; //immediately do stock check
 		TimerTask repeatedTask = new TimerTask() {
 			public void run() {
 				TimerHit();
