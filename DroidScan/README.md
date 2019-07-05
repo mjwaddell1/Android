@@ -23,4 +23,10 @@ IEX provides 5 years of chart data, but the app only stores the last 6 months to
 
 The app targets my phone - a Samsung J7 (720p).
 
+NOTE - IEX recently changed there API. You need to get a (free) token and attach it to each request. You can get a token at https://iextrading.com/developer/.
+
+    Old Call:  https://api.iextrading.com/1.0/ref-data/symbols?format=CSV
+
+    New Call:  https://cloud.iexapis.com/stable/ref-data/symbols?format=CSV&token=[YourPkToken]
+    
 Questions and comments are welcome - mjwaddell {AT} hotmail.com
