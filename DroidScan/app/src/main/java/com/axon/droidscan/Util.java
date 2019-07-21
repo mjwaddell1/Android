@@ -192,7 +192,9 @@ public class Util
 					@Override
 					public void run()
 					{
-						String url = "https://api.iextrading.com/1.0/stock/"+tkrs[ctr]+"/chart/1y?format=CSV"; //1 year of data, latest date at bottom
+						//String url = "https://api.iextrading.com/1.0/stock/"+tkrs[ctr]+"/chart/1y?format=CSV"; //1 year of data, latest date at bottom
+						//get (free) token from https://iextrading.com/developer/
+						String url = "https://cloud.iexapis.com/stable/stock/"+tkrs[ctr]+"/chart/1y?format=CSV&token=pk_xxxx"; //1 year of data, latest date at bottom
 						tkrData[ctr] = new StringBuilder();
 						GetWebData(tkrData[ctr], url, false, 2); //skip header
 					}
@@ -245,7 +247,9 @@ public class Util
 			//String uri = "https://api.iextrading.com/1.0/stock/market/batch?symbols="+alltkrs+"&types=quote&format=JSON";
 			//String uri = "https://api.iextrading.com/1.0/tops/last?symbols="+alltkrs+"&format=csv";
 			//delayed quote seems to have most accurate information
-			String uri = "https://api.iextrading.com/1.0/stock/market/batch?symbols="+alltkrs+"&types=delayed-quote&format=JSON";
+			//String uri = "https://api.iextrading.com/1.0/stock/market/batch?symbols="+alltkrs+"&types=delayed-quote&format=JSON";
+			//get (free) token from https://iextrading.com/developer/
+			String uri = "https://cloud.iexapis.com/stable/stock/market/batch?symbols="+alltkrs+"&types=delayed-quote&format=JSON&token=pk_xxxx";
 			Util.GetWebData(sb, uri, false, 0);
 			int cnt = out.size(); //ensure we get each symbol
 			for (String tkr : tkrs)
