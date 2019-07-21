@@ -18,6 +18,13 @@ NOTE - IEX recently changed there API. You need to get a (free) token and attach
 
     Old Call:  https://api.iextrading.com/1.0/ref-data/symbols?format=CSV
 
-    New Call:  https://cloud.iexapis.com/stable/ref-data/symbols?format=CSV&token=[YourPkToken]
+    New Call:  https://cloud.iexapis.com/stable/ref-data/symbols?format=CSV&token=[YourToken]
+
+
+==== UPDATE ====
+
+IEX severely reduced their request limit, so for stock prices, I switched to World Trading Data (also free)
+
+    https://api.worldtradingdata.com/api/v1/history?symbol=LABU&output=csv&api_token=[YourToken]
 
 Questions and comments are welcome - mjwaddell {AT} hotmail.com
