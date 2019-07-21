@@ -31,7 +31,8 @@ public class SettingsActivity extends Activity
 	//defaults
 	//if user clicks chart image, open site, {SYMBOL} is replaced with actual symbol
 	static String ChartURL = "https://finviz.com/quote.ashx?t={SYMBOL}&ty=c&ta=0&p=d";
-	static String Token = "pk_XXXXXXXXXXX"; //get this from https://iextrading.com/developer/
+	static String Token1 = "pk_ecede1af xxx add9b48ca9874"; //IEX - free account, used for stock names
+	static String Token2 = "iXTv6APQ4XfDBFVwg xxx dXMhk9GZmz8Ac3tOtZI0hz8S"; //WorldTradingData - free account - used for stock prices
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -41,7 +42,8 @@ public class SettingsActivity extends Activity
 		//load settings from preferences
 		((EditText)findViewById(R.id.txtSettings)).setText(Util.GetPreference("settings", null));
 		((EditText)findViewById(R.id.txtChartURL)).setText(Util.GetPreference("ChartURL", ChartURL));
-		((EditText)findViewById(R.id.txtToken)).setText(Util.GetPreference("Token", Token));
+		((EditText)findViewById(R.id.txtToken1)).setText(Util.GetPreference("Token1", Token1));
+		((EditText)findViewById(R.id.txtToken2)).setText(Util.GetPreference("Token2", Token2));
 
 		((Button) findViewById(R.id.btnSave)).setOnClickListener(new View.OnClickListener()
 		{
@@ -57,11 +59,13 @@ public class SettingsActivity extends Activity
 
 				//get text from GUI
 				ChartURL = ((EditText)findViewById(R.id.txtChartURL)).getText().toString();
-				Token = ((EditText)findViewById(R.id.txtToken)).getText().toString();
+				Token1 = ((EditText)findViewById(R.id.txtToken1)).getText().toString();
+				Token2 = ((EditText)findViewById(R.id.txtToken2)).getText().toString();
 
 				//write to storage
 				Util.SavePreference("ChartURL", ChartURL);
-				Util.SavePreference("Token", Token);
+				Util.SavePreference("Token1", Token1);
+				Util.SavePreference("Token2", Token2);
 
 				finish(); //close settings
 			}
@@ -128,7 +132,8 @@ public class SettingsActivity extends Activity
 		ParseSettings(); //parse settings text box
 
 		ChartURL = Util.GetPreference("ChartURL", ChartURL); //if user clicks chart
-		Token = Util.GetPreference("Token", Token); //for API
+		Token1 = Util.GetPreference("Token1", Token1); //for API
+		Token2 = Util.GetPreference("Token2", Token2); //for API
 	}
 
 	public static int ParseSettings()
@@ -202,7 +207,7 @@ public class SettingsActivity extends Activity
 	{
 		Util.LI("SetDefaultSettings");
 		StringBuilder sbSettings = new StringBuilder();
-		sbSettings.append("stk=TNA,BRZU,LABU,TECL,NAIL,DRN,DFEN,UBIO,JPNL,LBJ,UTSL,PILL,VIX,UGAZ,UCO\n"); //must specify specific watch list
+		sbSettings.append("stk=TNA,BRZU,LABU,TECL,NAIL,DRN,DFEN,UBIO,JPNL,LBJ,UTSL,PILL,UGAZ,UCO\n"); //must specify specific watch list
 		sbSettings.append("pctchange=-10\n"); //filter on pct change
 		sbSettings.append("dayspan=5\n"); //across previous X days
 		sbSettings.append("showspan=1,5,20\n"); //display on main gui button

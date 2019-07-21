@@ -93,10 +93,11 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:columnCount="2"
-	android:rowCount="3"
+	android:rowCount="4"
 	android:layout_margin="3dp">
 	<TextView android:id="@+id/txtChartURLX" android:text="Chart: " android:layout_row="1" android:layout_column="0"/>
-	<TextView android:id="@+id/txtTokenX" android:text="Token: " android:layout_row="2" android:layout_column="0" android:layout_marginTop="4dp"/>
+	<TextView android:id="@+id/txtTokenX1" android:text="IEX: " android:layout_row="2" android:layout_column="0" android:layout_marginTop="4dp"/>
+	<TextView android:id="@+id/txtTokenX2" android:text="WTD: " android:layout_row="3" android:layout_column="0" android:layout_marginTop="4dp"/>
 
 	<EditText android:id="@+id/txtChartURL"
         android:layout_weight = "1"
@@ -110,9 +111,21 @@
 		android:scrollHorizontally="true"
 		android:marqueeRepeatLimit="marquee_forever"/>
 
-    <EditText android:id="@+id/txtToken"
+    <EditText android:id="@+id/txtToken1"
               android:layout_weight = "1"
               android:layout_row="2"
+              android:layout_column="1"
+              android:layout_gravity="fill_horizontal"
+              android:background="#F9B90A"
+              android:paddingStart="2dp"
+              android:layout_height="wrap_content"
+              android:maxLines="5"
+              android:scrollHorizontally="true"
+              android:marqueeRepeatLimit="marquee_forever"
+              android:layout_marginTop="4dp"/>
+    <EditText android:id="@+id/txtToken2"
+              android:layout_weight = "1"
+              android:layout_row="3"
               android:layout_column="1"
               android:layout_gravity="fill_horizontal"
               android:background="#F9B90A"

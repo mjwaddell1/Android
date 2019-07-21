@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.Html;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.widget.Toast;
 import java.io.BufferedReader;
@@ -13,7 +14,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Util
 {
@@ -76,8 +82,10 @@ public class Util
 
 	public static void ShowToast(final String msg)
 	{
-		MainActivity.mMainActivity.runOnUiThread(new Runnable() {
-			public void run() {
+		MainActivity.mMainActivity.runOnUiThread(new Runnable()
+		{
+			public void run()
+			{
 			Toast.makeText(MainActivity.mMainActivity, msg, Toast.LENGTH_LONG).show();
 			}
 		});
@@ -104,10 +112,12 @@ public class Util
 	}
 
 	final static String LogTag = "TrScn";
+
 	public static void LI(String msg)
 	{
 		LI(msg, false);
 	} //info, default no toast
+
 	public static void LE(String msg)
 	{
 		LE(msg, true);
@@ -146,8 +156,7 @@ public class Util
 					{
 						log.insert(0, separator);
 						log.insert(0, line);
-					}
-					else //start with first log entry
+					} else //start with first log entry
 					{
 						log.append(line);
 						log.append(separator);
@@ -159,5 +168,14 @@ public class Util
 			LE(e.getMessage());
 		}
 		return log;
+	}
+
+	static public String DateAddDays(int d)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, d);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String strDate = dateFormat.format(cal.getTime());
+		return strDate;
 	}
 }

@@ -191,7 +191,11 @@ public class MainActivity extends Activity //main display screen
 		int cnt = ParseStockData(linStock); //show stock list, returns stock cnt shown
 		TextView ns = (TextView) findViewById(R.id.txtNoStocks); //hidden if stocks
 		ns.setVisibility(cnt == 0 ? View.VISIBLE : View.GONE);
-		txtUpdateTime.setText("Last Check: " + sdfDate.format(ScanSvc.dtLastCheck) + " [" + cnt + "-" + ScanSvc.Filters.size()+"]");
+		int totalPassCnt = 0;
+		for (Object k : ScanSvc.Filters.keySet())
+			totalPassCnt += ScanSvc.Filters.get(k).PassCnt;
+		txtUpdateTime.setText("Last Check: " + sdfDate.format(ScanSvc.dtLastCheck) + " [" + cnt + "-" + totalPassCnt + "]");
+		//txtUpdateTime.setText("Last Check: " + sdfDate.format(ScanSvc.dtLastCheck) + " [" + cnt + "-" + ScanSvc.Filters.size()+"]");
 		if (!restoreGUI && ScanSvc.mRefreshOnly) //stop service
 		{
 			ScanSvc.mRefreshOnly = false;

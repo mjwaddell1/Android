@@ -160,7 +160,7 @@ public class ScanSvc extends Service { //runs in background
 			for (String k : Filters.keySet()) //each filter
 			{
 				Filter f = Filters.get(k);
-				int cnt = f.RunFilter(); //get data from Alpha, parse results, CANNOT be called from GUI thread
+				int cnt = f.RunFilter(); //get data from API, parse results, CANNOT be called from GUI thread
 				for (TickerInfo ti: f.TickerList.values()) //each stock in result
 					if (ti.PassedFilter)
 						strNoteNew += ti.Symbol + " "; //add stock symbol to notification

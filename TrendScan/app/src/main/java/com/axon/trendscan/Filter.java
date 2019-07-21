@@ -2,6 +2,9 @@ package com.axon.trendscan;
 
 import android.graphics.Color;
 import android.os.Bundle;
+
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 
 public class Filter
@@ -16,6 +19,7 @@ public class Filter
 	public int DaySpan = 0; //day span to check for this filter
 	public int[] ShowSpans; //span pcts to show (5 day, 30 day,..)
 	public boolean ShowAllStocks = false; //display full stock list (include non-alert stocks)
+	public int PassCnt = 0; //number stocks passed filter
 
 	public Filter(String pName)
 	{
@@ -57,6 +61,7 @@ public class Filter
 		b.putInt("daySpan", DaySpan);
 		b.putIntArray("showSpans", ShowSpans);
 		b.putBoolean("showAllStocks", ShowAllStocks);
+		b.putInt("lastPriceHour", lastPriceHour);
 		for (TickerInfo t : TickerList.values()) //each stock in this filter
 			b.putBundle(t.Symbol, t.ToBundle());
 		return b;
@@ -73,6 +78,7 @@ public class Filter
 		DaySpan = b.getInt("daySpan");
 		ShowSpans = b.getIntArray("showSpans");
 		ShowAllStocks = b.getBoolean("showAllStocks");
+		lastPriceHour = b.getInt("lastPriceHour", 100);
 		TickerList.clear();
 		for (String s : Tkrs) //each stock in this filter
 			if (b.getBundle(s) != null)
@@ -129,9 +135,11 @@ public class Filter
 			if (t.PassedFilter)
 				passcnt++;
 		}
+		this.PassCnt = passcnt;
 		return passcnt;
 	}
 
+	int lastPriceHour = 100; //always run first time
 	public int RunFilter() //run filter request
 	{
 		Util.LI("RunFilter " + this.FilterName);
@@ -139,13 +147,31 @@ public class Filter
 		{
 			if (TickerList.size() == 0)
 				GetStockNames();
-			Hashtable<String, float[]> prices = Feed.GetPriceHistory(126, Tkrs); //for all tickers, 6 months
+			Hashtable<String, float[]> prices;
+			//check if new day or no data
+			if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < lastPriceHour || TickerList.get(Tkrs[0]).Prices.length < 5) //get full history + current price
+			{
+				prices = Feed.GetPriceHistoryMultiThread(200, Tkrs); //for all tickers, 6 months
 			for (TickerInfo tt : TickerList.values())
 			{
 				tt.Prices = prices.get(tt.Symbol);
 				tt.LastPrice = tt.Prices[0]; //price history has latest price
 				tt.CalcShowData(ShowSpans); //price change for each span
 			}
+			}
+			else  //update current price
+			{
+				prices = Feed.GetLastPriceOnly(Tkrs); //for all tickers, one day
+				for (String tkr : Tkrs)
+					TickerList.get(tkr).Prices[0] = prices.get(tkr)[0]; //only one entry
+				for (TickerInfo tt : TickerList.values())
+				{
+					tt.Prices[0] = prices.get(tt.Symbol)[0]; //last entry only
+					tt.LastPrice = tt.Prices[0]; //price history has latest price
+					tt.CalcShowData(ShowSpans); //price change for each span
+				}
+			}
+			lastPriceHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 			return FilterData(); //pass\fail
 		}
 		catch(Exception ex)
