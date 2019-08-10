@@ -38,7 +38,7 @@ public class Feed
 				if (ln.startsWith(pTkrs[ctr] + ","))
 				{
 					String[] cols = ln.split(",");
-					TickerList.put(pTkrs[ctr], cols[1]);  //symbol, name
+					TickerList.put(pTkrs[ctr], cols[2]);  //symbol, name
 					if (++ctr >= pTkrs.length) break; //next symbol
 				}
 			}
